@@ -133,6 +133,26 @@ try {
       });
 }
 }
+const getBlog=async(req,res)=>{
+ try {
+  const blogId=req.params.id
+  const blog = await Blog.findOne({ _id: blogId }).populate('userId', 'fullName profileImage bio');
 
+  if(!blog){
+    return res.status(404).json({ success: false, message: "error in getting blog with this id" });
+}
+return res.status(201).json({
+  success: true,
+  message: "Blog fetched successfully!",
+  data: blog
+});
+ } catch (error) {
+  return res.status(500).json({
+    success: false,
+    message: "Failed to fetch blogs with id ",
+    error: error.message,
+  });
+ }
+}
 
-module.exports = { createBlog, getUserBlogs,allBlogs,editBlog,deleteBlog };
+module.exports = { createBlog, getUserBlogs,allBlogs,editBlog,deleteBlog ,getBlog};

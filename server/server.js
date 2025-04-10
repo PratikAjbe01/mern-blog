@@ -10,10 +10,10 @@ const PORT=8000;
 connectDB();
 app.use(express.json());
 const corsOptions = {
-    origin: 'http://localhost:3000',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], // Optional, defaults to all common methods
-  };
+  origin: ['http://localhost:5173', 'http://localhost:5173/'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+};
   
 app.use(cors(corsOptions));
 app.use('/api', router);
