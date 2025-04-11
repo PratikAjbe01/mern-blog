@@ -34,6 +34,8 @@ const BlogsPage = () => {
         }
 
         setBlogs(data.data);
+        console.log(data.data);
+        
         toast.success(data.message);
       } catch (error) {
         setError(error.message);
@@ -102,11 +104,11 @@ const BlogsPage = () => {
                     <div className="flex items-center">
                       <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center mr-2">
                         <span className="text-xs font-bold text-gray-600">
-                          {blog.userId ? blog.userId.toString().charAt(0).toUpperCase() : 'U'}
+                          {blog.userId ? blog.userId.fullName.toString().charAt(0).toUpperCase() : 'U'}
                         </span>
                       </div>
                       <span className="text-sm font-medium text-gray-700">
-                        {blog.userId ? blog.userId.toString().substring(0, 6) + '...' : 'Unknown User'}
+                        {blog.userId ? blog.userId.fullName.toString().substring(0, 6) + '...' : 'Unknown User'}
                       </span>
                     </div>
                     <button 

@@ -1,6 +1,6 @@
 const { Blog } = require('../models/blogModel');
-
-
+const { User } = require('../models/userModel');
+const mongoose=require('mongoose');
 
 const createBlog = async (req, res) => {
   try {
@@ -65,7 +65,7 @@ const getUserBlogs = async (req, res) => {
 };
 const allBlogs=async(req,res)=>{
     try {
-        const blogs = await Blog.find();
+      const blogs = await Blog.find().populate('userId', 'fullName email profileImageUrl');
         if(blogs.length===0){
             return res.status(404).json({ success: false, message: "No blogs found" });
         }
@@ -133,26 +133,39 @@ try {
       });
 }
 }
-const getBlog=async(req,res)=>{
- try {
-  const blogId=req.params.id
-  const blog = await Blog.findOne({ _id: blogId }).populate('userId', 'fullName profileImage bio');
+const getBlog = async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    
+   
+    if (!mongoose.Types.ObjectId.isValid(blogId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid blog ID format"
+      });
+    }
+    
+    // const blog = await Blog.findById(blogId);
+    const blog = await Blog.findById(blogId).populate('userId', 'fullName email profileImageUrl');
 
-  if(!blog){
-    return res.status(404).json({ success: false, message: "error in getting blog with this id" });
-}
-return res.status(201).json({
-  success: true,
-  message: "Blog fetched successfully!",
-  data: blog
-});
- } catch (error) {
-  return res.status(500).json({
-    success: false,
-    message: "Failed to fetch blogs with id ",
-    error: error.message,
-  });
- }
-}
-
+    if (!blog) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Blog not found with this ID" 
+      });
+    }
+    
+    return res.status(200).json({
+      success: true,
+      message: "Blog fetched successfully!",
+      data: blog
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch blog",
+      error: error.message,
+    });
+  }
+};
 module.exports = { createBlog, getUserBlogs,allBlogs,editBlog,deleteBlog ,getBlog};

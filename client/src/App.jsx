@@ -9,6 +9,8 @@ import SignUp from './Pages/SignUp';
 import SignIn from './Pages/SignIn';
 import BlogsPage from './Pages/BlogPage';
 import BlogDetailPage from './Pages/BlogDetailPage';
+import Publish from './Pages/Publish';
+import UserBoard from './Pages/UserBoard';
 
 
 // Import other components like Dashboard, etc.
@@ -33,6 +35,8 @@ function App() {
         <Route path="/signin" element={<SignIn/>} />
         <Route path="/blogs" element={<BlogsPage/>} />
         <Route path="/blogs/:id" element={<BlogDetailPage/>} />
+        <Route path='/create' element={<Publish/>} />
+        <Route path='/user'  element={<UserBoard/>} />
       </Routes>
     </Router>
   );
