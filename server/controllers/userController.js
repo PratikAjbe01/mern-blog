@@ -74,5 +74,42 @@ const handleUserSignIn = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+const getUserInfo=async(req,res)=>{
+  try {
+       const token = req.headers.authorization?.split(' ')[1];  
+    
+        
+        if (!token) {
+          return res.status(401).json({
+            success: false,
+            message: 'Authorization token is required',
+          });
+        }
+    
+      
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+    
+    
+        const user = await User.findById(decoded.userId);
+        if (!user) {
+          return res.status(404).json({
+            success: false,
+            message: 'User not found',
+          });
+        }
+        return res.status(201).json({
+          success: true,
+          message: 'User found',
+          data:user,
+        });
+    
+       
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
 
-module.exports = { handleUserSignUp,handleUserSignIn };
+module.exports = { handleUserSignUp,handleUserSignIn ,getUserInfo};

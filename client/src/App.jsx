@@ -1,6 +1,6 @@
 
 
-// App.js (example of how to set up the router)
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -9,11 +9,11 @@ import SignUp from './Pages/SignUp';
 import SignIn from './Pages/SignIn';
 import BlogsPage from './Pages/BlogPage';
 import BlogDetailPage from './Pages/BlogDetailPage';
-import Publish from './Pages/Publish';
 import UserBoard from './Pages/UserBoard';
+import CreateBlog from './Pages/CreateBlog';
 
 
-// Import other components like Dashboard, etc.
+
 
 function App() {
   return (
@@ -35,7 +35,7 @@ function App() {
         <Route path="/signin" element={<SignIn/>} />
         <Route path="/blogs" element={<BlogsPage/>} />
         <Route path="/blogs/:id" element={<BlogDetailPage/>} />
-        <Route path='/create' element={<Publish/>} />
+        <Route path='/create' element={<CreateBlog/>} />
         <Route path='/user'  element={<UserBoard/>} />
       </Routes>
     </Router>

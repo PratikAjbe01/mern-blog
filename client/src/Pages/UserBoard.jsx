@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as jwt_decode from 'jwt-decode';// You'll need to install this package
+
 
 export default function UserBoard() {
   const [userBlogs, setUserBlogs] = useState([]);
@@ -12,44 +12,70 @@ export default function UserBoard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is authenticated
     const token = localStorage.getItem('token');
     if (!token) {
       setError('You must be logged in to view your blogs');
-      navigate('/signin'); // Redirect to sign in page
+      navigate('/signin');
       return;
     }
-
-    // Get user info from token
-    getUserFromToken(token);
-    // Fetch user blogs
-    fetchUserBlogs(token);
+  
+    const fetchAllData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([
+          getUserFromToken(token),
+          fetchUserBlogs(token),
+        ]);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchAllData();
   }, [navigate]);
+  
 
-  const getUserFromToken = (token) => {
-    try {
-      // Decode JWT token to get user information
-      const decoded = jwt_decode.jwtDecode(token);
-      
-      // Set user data from token
+  const getUserFromToken = async(token) => {
     
-      
-      setUser({
-        name: decoded.fullName || decoded.name || 'User',
-        email: decoded.email || '',
-        role: decoded.role || 'USER',
-        // We don't have createdAt in the token, so we'll use current date as a fallback
-        createdAt: new Date().toISOString()
-      });
-      
+      setLoading(true);
+      try {
+
+        
+        const response = await fetch('http://localhost:8000/api/getuser', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        // Check response status
+        if (response.status === 401) {
+          throw new Error('Authentication failed. Please log in again.');
+        }
+        
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          setUser(data.data);
+        } else {
+          // No blogs is a valid state, not an error
+          setUser();
+          console.log('No blogs found or', data.message);
+        }
     } catch (error) {
       console.error('Error extracting user data from token:', error);
       setError('Unable to load user profile. Invalid token.');
       // If token is invalid, redirect to login
       navigate('/signin');
     }
-  };
-
+  }
   const fetchUserBlogs = async (token) => {
     setLoading(true);
     try {
@@ -95,9 +121,11 @@ export default function UserBoard() {
     }
   };
 
+
+
   const handleEdit = (blogId) => {
     // Navigate to edit page
-    navigate(`/edit-blog/${blogId}`);
+    navigate(`/editblog/${blogId}`);
   };
 
   const openDeleteModal = (blog) => {
@@ -115,7 +143,7 @@ export default function UserBoard() {
     const token = localStorage.getItem('token');
     
     try {
-      const response = await fetch(`http://localhost:8000/api/blogs/${blogToDelete._id}`, {
+      const response = await fetch(`http://localhost:8000/api/blogs/delete/${blogToDelete._id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -154,14 +182,15 @@ export default function UserBoard() {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <h1 className="text-3xl font-bold mb-6">My Profile</h1>
         
+        
         {user ? (
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <h2 className="text-xl font-semibold mb-4">Account Details</h2>
               <div className="space-y-3">
-                <p><span className="font-medium">Name:</span> {user.name}</p>
+                <p><span className="font-medium">Name:</span> {user.fullName}</p>
                 <p><span className="font-medium">Email:</span> {user.email}</p>
-                <p><span className="font-medium">Member since:</span> {formatDate(user.createdAt)}</p>
+                <p><span className="font-medium">Acc Type:</span>{user.role}</p>
               </div>
             </div>
             <div>
@@ -188,7 +217,7 @@ export default function UserBoard() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">My Blogs</h2>
           <a 
-            href="/create-blog" 
+            href="/create" 
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
           >
             Create New Blog
