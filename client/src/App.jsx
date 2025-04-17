@@ -11,6 +11,9 @@ import BlogsPage from './Pages/BlogPage';
 import BlogDetailPage from './Pages/BlogDetailPage';
 import UserBoard from './Pages/UserBoard';
 import CreateBlog from './Pages/CreateBlog';
+import EditBlog from './Pages/EditBlog';
+import Navbar from './componets/Navbar';
+import HomePage from './componets/HomePage';
 
 
 
@@ -30,13 +33,17 @@ function App() {
         pauseOnHover
         theme="light"
       />
+            <Navbar/>
       <Routes>
+  
         <Route path="/" element={<SignUp/>} />
         <Route path="/signin" element={<SignIn/>} />
         <Route path="/blogs" element={<BlogsPage/>} />
+        <Route path='/home' element={<HomePage/>} />
         <Route path="/blogs/:id" element={<BlogDetailPage/>} />
         <Route path='/create' element={<CreateBlog/>} />
         <Route path='/user'  element={<UserBoard/>} />
+        <Route path="/editblog/:blogId" element={<EditBlog />} />
       </Routes>
     </Router>
   );
